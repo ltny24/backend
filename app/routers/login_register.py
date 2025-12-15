@@ -1,12 +1,28 @@
 import os
-from fastapi import APIRouter, HTTPException, Header, Request
-from fastapi.responses import RedirectResponse
+from fastapi import APIRouter, HTTPException, Header, Request, Depends, status
+from fastapi.responses import RedirectResponse, JSONResponse
 from pydantic import BaseModel, EmailStr
 from typing import Optional
-# Import các hàm tiện ích
-from app.auth.auth_utils import create_user, authenticate_user, generate_token, save_session, get_user_from_token, delete_session, create_or_get_oauth_user
-from app.auth.oauth_config import oauth
+from sqlalchemy.orm import Session
 
+# --- IMPORT DATABASE & UTILS MỚI ---
+from app.database import get_db  # Hàm lấy kết nối DB
+from app.auth.auth_utils import (
+    get_user_by_email, 
+    create_new_user, 
+    verify_password, 
+    create_oauth_user
+)
+
+# Thử import oauth, nếu chưa cấu hình thì bỏ qua để tránh lỗi sập web
+try:
+    from app.auth.oauth_config import oauth
+except ImportError:
+    oauth = None
+
+router = APIRouter()
+
+# ---- 1. MODELS (Dữ liệu đầu vào/ra) ----
 class SignUpRequest(BaseModel):
     email: EmailStr
     password: str
@@ -21,140 +37,160 @@ class SignInRequest(BaseModel):
 class AuthResponse(BaseModel):
     success: bool
     message: str
-    access_token: Optional[str] = None
     user: Optional[dict] = None
-router = APIRouter()
-# ---- 3. AUTHENTICATION ENDPOINTS ----
+
+# ---- 2. API ĐĂNG KÝ (SIGN UP) ----
 @router.post("/signup", response_model=AuthResponse)
-async def signup(request: SignUpRequest):
+async def signup(request: SignUpRequest, db: Session = Depends(get_db)):
     """
-    Đăng ký tài khoản mới.
-    Lưu thông tin user vào file CSV.
+    Đăng ký tài khoản mới và lưu vào PostgreSQL.
     """
     try:
-        # Tạo user mới
-        user_data = create_user(
+        # 1. Kiểm tra email đã tồn tại chưa
+        if get_user_by_email(db, request.email):
+            raise HTTPException(status_code=400, detail="Email này đã được đăng ký")
+
+        # 2. Tạo user mới vào Database
+        new_user = create_new_user(
+            db=db,
             email=request.email,
             password=request.password,
             first_name=request.first_name,
             last_name=request.last_name,
-            phone_number=request.phone_number
+            phone=request.phone_number
         )
-        
-        # Tạo access token
-        token = generate_token()
-        save_session(token, user_data)
         
         return AuthResponse(
             success=True,
-            message="Account created successfully",
-            access_token=token,
-            user=user_data
+            message="Đăng ký thành công",
+            user={
+                "id": new_user.id,
+                "email": new_user.email,
+                "name": f"{new_user.first_name} {new_user.last_name}"
+            }
         )
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except HTTPException as e:
+        raise e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Lỗi đăng ký: {str(e)}")
 
+# ---- 3. API ĐĂNG NHẬP (SIGN IN) ----
 @router.post("/signin", response_model=AuthResponse)
-async def signin(request: SignInRequest):
+async def signin(data: SignInRequest, request: Request, db: Session = Depends(get_db)):
     """
-    Đăng nhập với email và password.
-    Trả về access token nếu thành công.
+    Đăng nhập và lưu trạng thái vào Cookie Session.
     """
     try:
-        # Xác thực user
-        user_data = authenticate_user(request.email, request.password)
+        # 1. Tìm user trong DB
+        user = get_user_by_email(db, data.email)
         
-        if not user_data:
-            raise HTTPException(status_code=401, detail="Invalid email or password")
+        # 2. Kiểm tra mật khẩu
+        if not user or not user.password_hash or not verify_password(data.password, user.password_hash):
+            raise HTTPException(status_code=401, detail="Email hoặc mật khẩu không đúng")
         
-        # Tạo access token
-        token = generate_token()
-        save_session(token, user_data)
+        # 3. Lưu thông tin vào Cookie (SessionMiddleware)
+        # Cái này thay thế cho việc tạo token và lưu vào file json
+        request.session["user_id"] = user.id
+        request.session["user_email"] = user.email
+        request.session["user_name"] = f"{user.first_name} {user.last_name}"
         
         return AuthResponse(
             success=True,
-            message="Login successful",
-            access_token=token,
-            user=user_data
+            message="Đăng nhập thành công",
+            user={
+                "id": user.id,
+                "email": user.email,
+                "name": f"{user.first_name} {user.last_name}"
+            }
         )
-    except HTTPException:
-        raise
+    except HTTPException as e:
+        raise e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Login failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Lỗi đăng nhập: {str(e)}")
 
+# ---- 4. API ĐĂNG XUẤT ----
 @router.post("/logout")
-async def logout(authorization: Optional[str] = Header(None)):
+async def logout(request: Request):
     """
-    Đăng xuất - xóa session token.
-    Header: Authorization: Bearer <token>
+    Xóa session cookie.
     """
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Missing or invalid authorization header")
-    
-    token = authorization.replace("Bearer ", "")
-    delete_session(token)
-    
-    return {"success": True, "message": "Logged out successfully"}
+    request.session.clear()
+    return {"success": True, "message": "Đã đăng xuất"}
 
-# ---- OAUTH ENDPOINTS ----
+# ---- 5. API LẤY THÔNG TIN USER (ME) ----
+@router.get("/me")
+async def get_current_user(request: Request, db: Session = Depends(get_db)):
+    """
+    Lấy thông tin user từ Cookie Session hiện tại.
+    """
+    user_email = request.session.get("user_email")
+    
+    if not user_email:
+        raise HTTPException(status_code=401, detail="Bạn chưa đăng nhập")
+        
+    user = get_user_by_email(db, user_email)
+    if not user:
+        request.session.clear()
+        raise HTTPException(status_code=401, detail="User không tồn tại")
+        
+    return {
+        "success": True,
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "phone": user.phone_number
+        }
+    }
+
+# ---- 6. OAUTH ENDPOINTS (GOOGLE) ----
 @router.get("/google/login")
 async def google_login(request: Request):
-    """
-    Redirect to Google OAuth login page
-    """
+    if not oauth:
+        raise HTTPException(status_code=500, detail="OAuth chưa được cấu hình")
+    
+    # Redirect URI phải trùng với cái đã khai báo trên Google Cloud Console
+    # Ví dụ: https://travel-safety-backend.onrender.com/api/auth/google/callback
     redirect_uri = request.url_for('google_callback')
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 @router.get("/google/callback")
-async def google_callback(request: Request):
-    """
-    Google OAuth callback - handle user authentication
-    """
+async def google_callback(request: Request, db: Session = Depends(get_db)):
+    if not oauth:
+        raise HTTPException(status_code=500, detail="OAuth lỗi")
+        
     try:
         token = await oauth.google.authorize_access_token(request)
         user_info = token.get('userinfo')
         
         if not user_info:
-            raise HTTPException(status_code=400, detail="Failed to get user info from Google")
+            raise HTTPException(status_code=400, detail="Không lấy được thông tin từ Google")
         
-        # Create or get user
+        # Lấy thông tin
         email = user_info.get('email')
         first_name = user_info.get('given_name', '')
         last_name = user_info.get('family_name', '')
         
-        user_data = create_or_get_oauth_user(
-            email=email,
-            first_name=first_name,
-            last_name=last_name,
-            oauth_provider='google'
-        )
+        # 1. Tìm hoặc Tạo user trong Database
+        user = get_user_by_email(db, email)
+        if not user:
+            user = create_oauth_user(
+                db=db,
+                email=email,
+                first_name=first_name,
+                last_name=last_name
+            )
         
-        # Generate access token
-        access_token = generate_token()
-        save_session(access_token, user_data)
+        # 2. Lưu session đăng nhập
+        request.session["user_id"] = user.id
+        request.session["user_email"] = user.email
+        request.session["user_name"] = f"{user.first_name} {user.last_name}"
         
-        # Redirect to frontend with token
-        frontend_url = os.getenv('FRONTEND_URL', 'http://localhost:3000')
-        return RedirectResponse(url=f"{frontend_url}/auth/callback?token={access_token}")
+        # 3. Redirect về Frontend (Vercel)
+        # Thay link này bằng link Vercel của bạn nếu cần
+        frontend_url = os.getenv('FRONTEND_URL', 'https://travel-safety.vercel.app')
+        return RedirectResponse(url=f"{frontend_url}")
         
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Google authentication failed: {str(e)}")
-
-@router.get("/me")
-async def get_current_user(authorization: Optional[str] = Header(None)):
-    """
-    Lấy thông tin user hiện tại từ token.
-    Header: Authorization: Bearer <token>
-    """
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Missing or invalid authorization header")
-    
-    token = authorization.replace("Bearer ", "")
-    user_data = get_user_from_token(token)
-    
-    if not user_data:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
-    
-    return {"success": True, "user": user_data}
+        raise HTTPException(status_code=400, detail=f"Lỗi đăng nhập Google: {str(e)}")
