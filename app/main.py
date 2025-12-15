@@ -2,15 +2,19 @@ import sys
 import os
 import logging
 import uvicorn
+import warnings # <--- Thêm thư viện này để tắt cảnh báo rác
 from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 
-# --- IMPORT DATABASE (QUAN TRỌNG) ---
+# --- IMPORT DATABASE ---
 from app.database import engine, Base
 from app.models import User
+
+# --- TẮT CẢNH BÁO PHIÊN BẢN (Để Log sạch đẹp hơn) ---
+warnings.filterwarnings("ignore") 
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +38,7 @@ from app.routers import (
 )
 
 # --- TẠO BẢNG TRONG DATABASE ---
-# Lệnh này tự động tạo bảng 'users' nếu chưa có
+# Lệnh này tự động tạo bảng 'users' và các bảng khác nếu chưa có
 Base.metadata.create_all(bind=engine)
 
 # --- Khởi tạo App ---
@@ -49,19 +53,20 @@ app = FastAPI(
 # 1. Session (Cookie)
 app.add_middleware(SessionMiddleware, secret_key="your-secret-key-change-in-production")
 
-# 2. CORS (QUAN TRỌNG: Sửa lỗi Frontend báo Failed)
-# Bạn hãy thay dòng dưới bằng Link Vercel thật của bạn
-origins = [
-    "http://localhost:3000",             # React chạy local
-    "http://localhost:5173",             # Vite chạy local
-    "https://travel-safety.vercel.app",  # <--- LINK VERCEL CỦA BẠN (Không có dấu / ở cuối)
-    
-]
-
+# 2. CORS (QUAN TRỌNG: Đã nâng cấp để chấp nhận mọi link Vercel)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,   # Chỉ cho phép các nguồn đã khai báo
-    allow_credentials=True,  # Bắt buộc True để Frontend nhận được Cookie/Token
+    # Danh sách các tên miền cụ thể (Localhost và Domain chính)
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "https://travel-safety.vercel.app",
+        "https://travel-safety-nhom3.vercel.app", # Thêm link nhóm cho chắc ăn
+    ],
+    # QUAN TRỌNG: Dòng này cho phép mọi subdomain của vercel (ví dụ: travel-safety-git-main...)
+    # Giúp bạn không bao giờ bị lỗi CORS khi deploy bản thử nghiệm
+    allow_origin_regex="https://.*\.vercel\.app", 
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
