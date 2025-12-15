@@ -1,0 +1,15 @@
+# Bỏ qua thư mục môi trường ảo (nếu có)
+venv/
+env/
+.venv/
+
+# Bỏ qua file biên dịch Python
+__pycache__/
+*.pyc
+
+# Bỏ qua file biến môi trường (chứa mật khẩu)
+.env
+
+# Bỏ qua file cấu hình của editor
+.vscode/
+.idea/

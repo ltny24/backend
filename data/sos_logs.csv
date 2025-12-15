@@ -1,0 +1,35 @@
+timestamp,user_id,lat,long,medical_info,contact_person,dispatched_to,station_distance
+2025-12-09T12:43:57.343960,user_app_v1,11.009626605243751,106.66755525464973,Không có tiền sử bệnh lý đặc biệt,"Mẹ (0901234567), Anh trai (0912345678)",Unknown,0.91
+2025-12-09T12:44:07.996871,user_app_v1,11.009626605243751,106.66755525464973,Không có tiền sử bệnh lý đặc biệt,"Mẹ (0901234567), Anh trai (0912345678)",Unknown,0.91
+2025-12-09T12:47:16.728750,user_app_v1,11.00961415161819,106.6675538811143,Không có tiền sử bệnh lý đặc biệt,"Mẹ (0901234567), Anh trai (0912345678)",Unknown,0.91
+2025-12-09T12:52:42.855059,user_app_v1,11.00961415161819,106.6675538811143,Không có tiền sử bệnh lý đặc biệt,"Mẹ (0901234567), Anh trai (0912345678)",Unknown,0.91
+2025-12-09T13:13:43.284130,anonymous_user,11.009515491707617,106.66753361618112,Không có ghi chú y tế,"Mẹ (0901234567), Anh trai (0912345678)",Unknown,0.92
+2025-12-09T13:29:11.450174,anonymous_user,11.00963452493624,106.66754889024274,Không có ghi chú y tế,Ops (0837355204),Unknown,0.91
+2025-12-09T14:30:11.782150,anonymous_user,11.009595101320715,106.66755798827123,Không có ghi chú y tế,"Anh trai (0912345678), sad (0837355204)",Unknown
+2025-12-09T14:43:38.649946,anonymous_user,11.009626783487429,106.66755483311684,Không có ghi chú y tế,"Mẹ (0901234567), Anh trai (0912345678)",Unknown,0.91
+2025-12-09T14:44:22.059332,anonymous_user,11.009626783487429,106.66755483311684,Không có ghi chú y tế,"Mẹ (0901234567), Anh trai (0912345678), Yui (0837355204)",Unknown,0.91
+2025-12-09T14:48:57.074961,anonymous_user,11.009593015662029,106.66755944183411,Không có ghi chú y tế,Ops (0837355204),Unknown,0.91
+2025-12-09T18:23:34.591239,anonymous_user,11.009617270462005,106.66752237183393,Nhóm máu: fsad. Ghi chú: Vailon,"Mẹ (0901234567), Anh trai (0912345678)",Unknown,0.91
+2025-12-09T19:43:35.976389,anonymous_user,11.00961539831284,106.66755673267066,Nhóm máu: fsad. Ghi chú: Vailon,Not provided,Unknown,0.91
+2025-12-09T19:48:13.826671,test_user,10.7769,106.7009,Allergy,family@example.com,Test Station,5.0
+2025-12-09T20:08:50.948702,anonymous_user,11.00961539831284,106.66755673267066,Nhóm máu: fsad. Ghi chú: Vailon,Not provided,Unknown,0.91
+2025-12-09T20:11:19.702248,anonymous_user,11.00961539831284,106.66755673267066,Nhóm máu: fsad. Ghi chú: Vailon,Not provided,Unknown,0.91
+2025-12-09T20:15:07.131173,anonymous_user,11.00961539831284,106.66755673267066,Nhóm máu: fsad. Ghi chú: Vailon,Not provided,Unknown,0.91
+2025-12-09T20:16:31.660123,anonymous_user,11.00961539831284,106.66755673267066,Nhóm máu: fsad. Ghi chú: Vailon,Not provided,Unknown,0.91
+2025-12-09T20:26:38.165082,anonymous_user,11.009626876078993,106.66754897508498,Nhóm máu: fsad. Ghi chú: Vailon,Not provided,Unknown,0.91
+2025-12-09T20:27:07.668691,anonymous_user,11.009626876078993,106.66754897508498,Nhóm máu: fsad. Ghi chú: Vailon,Not provided,Unknown,0.91
+2025-12-09T20:27:11.343539,anonymous_user,11.009626876078993,106.66754897508498,Nhóm máu: fsad. Ghi chú: Vailon,Not provided,Unknown,0.91
+2025-12-09T20:33:08.351214,anonymous_user,11.009621252550351,106.66755142636671,Nhóm máu: fsad. Ghi chú: Vailon,Not provided,Unknown,0.91
+2025-12-09T20:33:19.636356,anonymous_user,11.009621252550351,106.66755142636671,Nhóm máu: fsad. Ghi chú: Vailon,Not provided,Unknown,0.91
+2025-12-09T20:38:32.199289,anonymous_user,11.009621252550351,106.66755142636671,Nhóm máu: fsad. Ghi chú: Vailon,Not provided,Unknown,0.91
+2025-12-09T20:43:06.804648,anonymous_user,11.009620014477264,106.66754167576758,Nhóm máu: fsad. Ghi chú: Vailon,Not provided,Unknown,0.91
+2025-12-09T20:49:30.050051,user123,11.009620014477264,106.66754167576758,Nhóm máu: fsad. Ghi chú: Vailon,['nguoibinhthuong375@gmail.com'],Unknown,0.91
+2025-12-09T21:01:35.875751,user123,11.009620014477264,106.66754167576758,Nhóm máu: fsad. Ghi chú: Vailon,['nguoibinhthuong375@gmail.com'],Unknown,0.91
+2025-12-09T21:02:53.957341,user123,11.009620014477264,106.66754167576758,Nhóm máu: fsad. Ghi chú: Vailon,['nguoibinhthuong375@gmail.com'],Unknown,0.91
+2025-12-09T21:04:41.729137,user123,11.00961019958784,106.66756219160224,Nhóm máu: fsad. Ghi chú: Vailon,['nguoibinhthuong375@gmail.com'],Unknown,0.91
+test_user,10.7769,106.7009,2024-01-15 14:30:00
+2024-01-15T14:30:00,test_user,10.7769,106.7009,Tiem chung hien tai,['test@example.com'],Test Station,0.03
+2025-12-09T21:27:51.946157,user123,11.00961019958784,106.66756219160224,Nhóm máu: fsad. Ghi chú: Vailon,['nguoibinhthuong375@gmail.com'],Bai giu xe Vi pham Trat tu An toan Giao thong Tinh Binh Duong,0.91
+2025-12-09T22:18:53.213414,user123,10.797056,106.6565632,Không có ghi chú y tế,Not provided,Unknown,0.13
+2025-12-09T22:19:28.120778,user123,10.797056,106.6565632,Không có ghi chú y tế,['nguyenhaitrong15@gmail.com'],Unknown,0.13
+2025-12-11T21:06:43.025362,1,11.9570432,108.4391424,No information,['nguyenhaitrong15@gmail.com'],Unknown,0.92

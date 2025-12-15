@@ -1,0 +1,8 @@
+user_id,email,password_hash,first_name,last_name,phone_number,created_at
+1,aminh@gmail.com,e3c1f2b8aa667952a944a32826c78c08$8e90e50c30c2b148a697f6ac8291cf3ada09be9f7e4d1ca3c3957ed556fadcc5,Minh,Anh,0987654321,2025-11-26T14:38:06.774978
+2,ThuBinh@gmail.com,0a46658284c40197ab38508207e4583c$edd50aae1b599de6bf22d97c37462ef2b2900987e2ab69834e201d0d3e229dc6,Thu ,Binh,0987654321,2025-11-26T17:11:40.855055
+3,jklmnbvcxzaqwertyuiop@gmail.com,,Minh,Anh,,2025-11-26T18:52:21.514765
+4,weirdobsessionforstudying@gmail.com,,Do not,disturb,,2025-11-26T21:01:26.564815
+5,am@gmail.com,63f22e5ceef8da206308785f182596e4$82e6cc59163ec2a71a9bac1c5f2b5ef27badfcd6697566d3b1a135a9e5129346,he,he,09876543312,2025-11-26T21:02:29.461681
+6,hazhaoiuxiyu@gmail.com,,iuxiyu,hazhao,,2025-11-26T23:57:42.963230
+7,nguyenhaitrong15@gmail.com,,Nguyễn Hải,Trọng,,2025-11-28T08:36:52.467017

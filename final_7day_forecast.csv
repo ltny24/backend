@@ -1,0 +1,8 @@
+date,lat,lon,temp_avg,humidity,precip24,wind_max,gust6,river_discharge,eq_mag,eq_dist,rain_label_rule,wind_label_rule,storm_label_rule,flood_label_rule,earthquake_label_rule,overall_hazard_rule,overall_hazard_ml
+2025-12-09,22.0667,106.0833,17.15,70,0.0,7.8,20.5,5.44,0,999,no,mid,low,no,no,No,No
+2025-12-10,22.0667,106.0833,17.3,70,0.0,7.7,21.2,5.44,0,999,no,mid,low,no,no,No,No
+2025-12-11,22.0667,106.0833,16.0,70,0.0,4.7,24.5,5.44,0,999,no,mid-high,low,no,no,Wind,Wind
+2025-12-12,22.0667,106.0833,16.85,70,4.6,4.3,19.1,5.44,0,999,low,mid,low,no,no,No,No
+2025-12-13,22.0667,106.0833,15.35,70,7.6,19.9,62.6,5.44,0,999,low,high,low,no,no,Wind,Wind
+2025-12-14,22.0667,106.0833,14.049999999999999,70,0.0,10.2,28.4,5.44,0,999,no,mid-high,low,no,no,Wind,Wind
+2025-12-15,22.0667,106.0833,14.899999999999999,70,0.0,6.9,18.7,5.44,0,999,no,mid,no,no,no,No,No
