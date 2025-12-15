@@ -190,7 +190,7 @@ async def google_callback(request: Request, db: Session = Depends(get_db)):
         # 3. Redirect về Frontend (Vercel)
         # Thay link này bằng link Vercel của bạn nếu cần
         frontend_url = os.getenv('FRONTEND_URL', 'https://travel-safety.vercel.app')
-        return RedirectResponse(url=f"{frontend_url}")
+        return RedirectResponse(url=f"{frontend_url}/home")
         
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Lỗi đăng nhập Google: {str(e)}")
