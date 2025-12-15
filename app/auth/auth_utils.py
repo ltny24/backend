@@ -51,20 +51,27 @@ def create_new_user(db: Session, email: str, password: str, first_name: str, las
 
 def create_oauth_user(db: Session, email: str, first_name: str, last_name: str):
     """
-    Tạo user cho trường hợp đăng nhập bằng Google (không có mật khẩu).
+    Tạo user Google. 
+    Vì Database yêu cầu bắt buộc có pass, ta sẽ tự sinh một pass ngẫu nhiên cực khó.
+    Người dùng không cần biết pass này (vì họ login bằng Google).
     """
+    # 1. Tự sinh mật khẩu ngẫu nhiên (dài 32 ký tự)
+    random_password = secrets.token_urlsafe(32)
+    hashed_pwd = hash_password(random_password)
+    
+    # 2. Tạo user với mật khẩu ngẫu nhiên đó
     new_user = User(
         email=email,
-        password_hash=None, # Google login không cần mật khẩu
+        password_hash=hashed_pwd, # <--- Giờ nó có dữ liệu rồi, không phải None nữa
         first_name=first_name,
         last_name=last_name,
         phone_number=None
     )
+    
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     return new_user
-
 # ---- LƯU Ý ----
 # Các hàm save_session, load_sessions (JSON) đã bị XÓA BỎ.
 # Lý do: Chúng ta đã chuyển sang dùng Cookie Session (SessionMiddleware) xịn hơn trong main.py.
