@@ -63,6 +63,8 @@ async def signup(request: SignUpRequest, db: Session = Depends(get_db)):
         return AuthResponse(
             success=True,
             message="Đăng ký thành công",
+            # THÊM DÒNG NÀY: Để Frontend thấy có token là nó vui
+            access_token="login_via_cookie_session", 
             user={
                 "id": new_user.id,
                 "email": new_user.email,
@@ -97,6 +99,8 @@ async def signin(data: SignInRequest, request: Request, db: Session = Depends(ge
         return AuthResponse(
             success=True,
             message="Đăng nhập thành công",
+            # THÊM DÒNG NÀY:
+            access_token="login_via_cookie_session",
             user={
                 "id": user.id,
                 "email": user.email,
