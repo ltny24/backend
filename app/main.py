@@ -37,6 +37,7 @@ from app.routers import (
     user_alerts,
     forecast_7day,
     sos,
+    profile_data,
     past_hazards
     # Nếu bạn đã tạo router user_logs thì import vào đây, chưa thì thôi
     # user_logs 
@@ -95,7 +96,7 @@ app.include_router(user_alerts.router, prefix="/api/user", tags=["User Alerts & 
 app.include_router(forecast_7day.router, prefix="/api/v1/forecast", tags=["7-Day Forecast"])
 app.include_router(sos.router, prefix="/api/v1/sos", tags=["SOS & Emergency"])
 app.include_router(past_hazards.router, prefix="/api/v1/hazards/past", tags=["Past Hazards Statistics"])
-
+app.include_router(profile_data.router, prefix="/api/v1/profile", tags=["User Profile Data"])
 # Nếu bạn đã viết file user_logs.py thì bỏ comment dòng dưới để chạy
 # app.include_router(user_logs.router, prefix="/api/logs", tags=["User Logs"])
 
