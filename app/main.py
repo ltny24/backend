@@ -9,22 +9,19 @@ from starlette.middleware.sessions import SessionMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 
-# --- 1. IMPORT DATABASE & MODELS (Theo đúng thứ tự này) ---
+# --- 1. IMPORT DATABASE & MODELS ---
 from app.database import engine, Base
-
-# Import tất cả các bảng để SQLAlchemy biết mà tạo
-# (Nhớ thêm UserLog vào đây để lưu lịch sử cập nhật)
 from app.models import User, EmergencyContact, MedicalInfo, SavedLocation, UserLog
 
 # --- TẮT CẢNH BÁO RÁC ---
-warnings.filterwarnings("ignore") 
+warnings.filterwarnings("ignore")
 
 logger = logging.getLogger(__name__)
 
 # --- Cấu hình đường dẫn ---
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# --- Import các router ---
+# --- Import các router cũ ---
 from app.routers import (
     map_risk,
     ai_score,
@@ -37,13 +34,13 @@ from app.routers import (
     user_alerts,
     forecast_7day,
     sos,
-  
     past_hazards
-    # Nếu bạn đã tạo router user_logs thì import vào đây, chưa thì thôi
-    # user_logs 
 )
-from app.routers import profile_data
-# --- 2. TẠO BẢNG (Chỉ chạy lệnh này SAU KHI đã import Models ở trên) ---
+
+# --- Import router mới (Import riêng để tránh lỗi vòng lặp) ---
+from app.routers.profile_data import router as profile_router
+
+# --- 2. TẠO BẢNG ---
 Base.metadata.create_all(bind=engine)
 
 # --- Khởi tạo App ---
@@ -54,11 +51,8 @@ app = FastAPI(
 )
 
 # --- CẤU HÌNH MIDDLEWARE ---
-
-# 1. Session (Cookie)
 app.add_middleware(SessionMiddleware, secret_key="your-secret-key-change-in-production")
 
-# 2. CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -67,7 +61,6 @@ app.add_middleware(
         "https://travel-safety.vercel.app",
         "https://travel-safety-nhom3.vercel.app",
     ],
-    # Thêm chữ r vào trước đường dẫn regex để tránh warning
     allow_origin_regex=r"https://.*\.vercel\.app", 
     allow_credentials=True,
     allow_methods=["*"],
@@ -96,9 +89,9 @@ app.include_router(user_alerts.router, prefix="/api/user", tags=["User Alerts & 
 app.include_router(forecast_7day.router, prefix="/api/v1/forecast", tags=["7-Day Forecast"])
 app.include_router(sos.router, prefix="/api/v1/sos", tags=["SOS & Emergency"])
 app.include_router(past_hazards.router, prefix="/api/v1/hazards/past", tags=["Past Hazards Statistics"])
-app.include_router(profile_data.router, prefix="/api/v1/profile", tags=["User Profile Data"])
-# Nếu bạn đã viết file user_logs.py thì bỏ comment dòng dưới để chạy
-# app.include_router(user_logs.router, prefix="/api/logs", tags=["User Logs"])
+
+# --- SỬA DÒNG NÀY (Dùng biến profile_router) ---
+app.include_router(profile_router, prefix="/api/v1/profile", tags=["User Profile Data"])
 
 @app.get("/")
 def health_check():
