@@ -70,7 +70,7 @@ app.add_middleware(
     ],
     # QUAN TRỌNG: Dòng này cho phép mọi subdomain của vercel (ví dụ: travel-safety-git-main...)
     # Giúp bạn không bao giờ bị lỗi CORS khi deploy bản thử nghiệm
-    allow_origin_regex="https://.*\.vercel\.app", 
+    allow_origin_regex=r"https://.*\.vercel\.app", 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
