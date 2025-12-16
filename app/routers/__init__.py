@@ -14,5 +14,3 @@ from . import forecast_7day
 from . import sos
 from . import past_hazards
 
-# --- QUAN TRỌNG: Thêm file mới vào đây ---
-from . import profile_data

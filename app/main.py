@@ -37,12 +37,12 @@ from app.routers import (
     user_alerts,
     forecast_7day,
     sos,
-    profile_data,
+  
     past_hazards
     # Nếu bạn đã tạo router user_logs thì import vào đây, chưa thì thôi
     # user_logs 
 )
-
+from app.routers import profile_data
 # --- 2. TẠO BẢNG (Chỉ chạy lệnh này SAU KHI đã import Models ở trên) ---
 Base.metadata.create_all(bind=engine)
 
