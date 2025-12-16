@@ -38,8 +38,7 @@ from app.routers import (
 )
 
 # --- Import router mới (Import riêng để tránh lỗi vòng lặp) ---
-from app.routers.profile_data import router as profile_router
-
+from app.profile_data import router as profile_router
 # --- 2. TẠO BẢNG ---
 Base.metadata.create_all(bind=engine)
 
