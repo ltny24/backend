@@ -8,7 +8,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
+from app.models import User, EmergencyContact, MedicalInfo, SavedLocation 
 
+# ...
+
+# Lệnh này sẽ kiểm tra: Bảng nào chưa có thì tạo mới ngay lập tức
+Base.metadata.create_all(bind=engine)
 # --- IMPORT DATABASE ---
 from app.database import engine, Base
 from app.models import User
